@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html"; charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="style.css">
+	<link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,500,800' rel='stylesheet' type='text/css'>
+    <title>JoAnn Klein's Project</title>
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="leaflet.css" />
+
+	<style>
+		head {font-family: "Lucida Grande",sans-serif; }
+	    body {font-family: "jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans", sans-serif;
+  width: 750px;
+  margin: 20px auto;
+}
+		
+		#map {
+			width: 750px;
+			height: 468.75px;
+		}
+
+		.info {
+			padding: 6px 8px;
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			background: white;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+		.info h4 {
+			margin: 0 0 5px;
+			color: #777;
+		}
+
+		.legend {
+			text-align: left;
+			line-height: 18px;
+			color: #555;
+		}
+		.legend i {
+			width: 18px;
+			height: 18px;
+			float: left;
+			margin-right: 8px;
+			opacity: 0.7;
+		}
+	</style>
+</head>
+<body width = "20%">
+	<div class="header-info">
+		<h1 align="center" fontsize="64">Who will take care of America's Southern Nannas?</h1> 
+		<h2 align="center" class="kicker">Why some states can't help grandmothers and who has to pick up their slack in the future. </h2>
+	<div class="meta-container">
+		<h3 align="center" class="meta-info byline">By <a class="author" href="https://twitter.com/nonojojo">JoAnna Klein</a></h3>
+		<h4 align="center" class="meta-info date">April 29, 2015</h4>
+	</div>
+
+		
+	</div>
+	<div class="article"> 
+	<hr width="80%" />
+		<p>Ever since we started recording these things, children have outnumbered their elders. But as Bob Dylan would have put it, 'the times, they are a changin&#8217.'' And as the National Institute on Aging <a href="http://www.nia.nih.gov/research/publication/global-health-and-aging/overview">puts it</a> 'the world is on the brink of a demographic milestone.' We live longer. We have fewer kids. In 5 years, the scales will tip, seniors will outnumber toddlers, and the world will make history. So take some storytelling tips from Dylan and Nonnie and Pop because there&#8217s a new tale to tell, and we write the plot. </p>
+
+		<p>In America alone, the United States Administration on Aging <a href="http://www.aoa.acl.gov/Aging_Statistics/index.aspx">estimates</a> that by the year 2030, one in five Americans will be over the age of 65. </p>
+
+		<p> And although we can live longer, we can&#8217t stop biology. Bodies break down. Living gets harder. And for over a third of the population &#8212 after turning 65, disability is inevitable. </p>
+		
+		<p> According to The United States Census Bureau, in 2014 more than 6 million seniors <a href="http://www.census.gov/newsroom/press-releases/2014/cb14-218.html" >reported</a> ambulatory disability. To put that in perspective, if we gathered them all together, we could replace almost everyone in Chicago and Los Angeles with senior citizens. 
+
+		<p>But that would be ridiculous. </p>
+
+		<p>There is no question Americans are growing older or that mobility is a problem. The real questions are: Where are our seniors? Who are they? Who is taking care of them now, and who will bear the responsibility in the future? </p>
+
+		<h3 align="center" class="subhed">They&#8217re all over the country, and primarily women.</h3>
+
+		<p>I looked at data from the 2012 <a href="http://www.census.gov/acs/www/" >American Community Survey</a> and found that people (or as the survey defines them, 'grandparents') over the age of 65 in non-institutionalized settings (or, not in prisons or mental institutions) suffer ambulatory disability across the nation. Grandmothers have it especially hard: In every single state, roughly four women for every three men report trouble walking and climbing stairs. That makes sense. Women outlive men by five or six years, so there are just more women than men, right? </p>
+
+		<p>Not necessarily. To control for an imbalanced gender dynamic, instead of looking at the raw numbers, I looked at the percentages of men and women reporting ambulatory disabilites, and then I mapped them. Well, just the women. </p>
+
+
+  
+	<div id="map"></div>
+
+	<script src="leaflet.js"></script>
+
+	<script align="center" type="text/javascript" src="us-states-women.js"></script>
+	<script type="text/javascript">
+
+		var map = L.map('map').setView([37.8, -96], 4);
+
+		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-20v6611k'
+		}).addTo(map);
+
+
+		// control that shows state info on hover
+		var info = L.control();
+
+		info.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info');
+			this.update();
+			return this._div;
+		};
+
+		info.update = function (props) {
+			this._div.innerHTML = '<h4>Percent of Elderly Women with Ambulatory Disability</h4>' +  (props ?
+				'<b>' + props.name + '</b><br>' + props.density + ' percent'
+				: 'Hover over a state');
+		};
+
+		info.addTo(map);
+
+
+		// get color depending on population density value
+		function getColor(d) {
+			return d > 30  ? '#0c2c84' :
+			       d > 28  ? '#225ea8' :
+			       d > 26 ? '#1d91c0' :
+			       d > 24  ? '#41b6c4' :
+			       d > 22  ? '#7fcdbb' :
+			       d > 20 ? '#c7e9b4' :
+			       d > 15   ? '#ffffcc' :
+			                  '#FFEDA0';
+
+
+		}
+
+		function style(feature) {
+			return {
+				weight: 2,
+				opacity: 1,
+				color: 'white',
+				dashArray: '3',
+				fillOpacity: 1.0,
+				fillColor: getColor(feature.properties.density)
+			};
+		}
+
+		function highlightFeature(e) {
+			var layer = e.target;
+
+			layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+			});
+
+			if (!L.Browser.ie && !L.Browser.opera) {
+				layer.bringToFront();
+			}
+
+			info.update(layer.feature.properties);
+		}
+
+		var geojson;
+
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+			info.update();
+		}
+
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		}
+
+		function onEachFeature(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+				click: zoomToFeature
+			});
+		}
+
+		geojson = L.geoJson(statesData, {
+			style: style,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+
+		map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+
+
+		var legend = L.control({position: 'bottomright'});
+
+		legend.onAdd = function (map) {
+
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = [15, 20, 22, 24, 26, 28, 30],
+				labels = [],
+				from, to;
+
+			for (var i = 0; i < grades.length; i++) {
+				from = grades[i];
+				to = grades[i + 1];
+
+				labels.push(
+					'<i style="background:' + getColor(from + .1) + '"></i> ' +
+					from + (to ? '&ndash;' + to : '+'));
+			}
+
+			div.innerHTML = labels.join('<br>');
+			return div;
+		};
+
+		legend.addTo(map);
+
+	</script>
+
+	<h3 align="center" class="subhed">For grandmas down in Appalachia and the Mississippi Delta, getting around ain&#8217t a slice of pecan pie. </h3>
+
+	<p>The data does not surprise <a href= “http://www.jhsph.edu/faculty/directory/profile/3711/Kasper/Judith” >Judith Kasper</a>, Principal Investigator of the <a href=“http://www.nhats.org”>National Health and Aging Trends Study</a>. She says many types of disability are higher among women than men because older women live longer, often become widowed with less support, and as they age grow, more disabled. When looking at the trends in southern health at any age, Kasper sees similar patterns: 'When you do any kind of state ranking, southern states tend to have higher levels of people with chronic diseases,' says Kasper. These include lifestyle diseases like diabetes, obesity, heart disease and stroke, that can impair a person&#8217s ability to get around. </p>
+
+	<h3 class="subhed">In West Virginia, Kentucky, Alabama, Mississippi, Louisiana and Puerto Rico, more than a third of women over the age of 65 had problems with getting in and around the house. What was going on? </h3>
+
+	<P>Over the past 20 years, elderly populations have been leaving nursing homes for community living, spouses and daughters, not surprisingly, administer care. Kasper says reliance on family will likely continue into the future as it has for decades. And she thinks we should start thinking about 'how to support caregivers who are in the position of helping their older parents.' The National Aging Study will soon release a paper on disabilities in older people and caregiving, but Kasper could not share any details.</P>
+
+	<p>What's behind this data reflects a trend in the general population that researchers have been trying to tease out for years. Like most things, it comes down to money and education. Generally southern states are poorer and less educated than the rest of the country, says Kasper. </p>
+
+	<p>And things get more complicated. Compared with others, the states that rank high in percentage of women reporting ambulatory disabilities also have high percentages of women widowed, living alone, or living alone below poverty level.</p>
+
+	
+	<h3 align="center" class="subhed">The Most Immobile, Broken Down</h3>
+
+
+    <table align="center" class="example-table">
+      <thead>
+        <tr>
+          <th width="150" class="state-cell">State</th>
+          <th width="150" class="Percent Widowed-cell">Percent Widowed</th>
+          <th width="150" class="Percent Alone-cell">Percent Alone</th>
+          <th width="150" class="PA Below Poverty-cell">PA Below Poverty</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr width="150" class="firstRow">
+          <td width="150" class="state-cell">Puerto Rico</td>
+          <td width="150" class="Percent Widowed-cell">39.03</td>
+          <td width="150" class="Percent Alone-cell">28.15</td>
+          <td width="150" class="PA Below Poverty-cell">17.91</td>
+        </tr>
+        <tr>
+          <td width="150" class="state-cell">Mississippi</td>
+          <td width="150" class="Percent Widowed-cell">43.51</td>
+          <td width="150" class="Percent Alone-cell">36.15</td>
+          <td width="150" class="PA Below Poverty-cell">10.36</td>
+        </tr>
+        <tr>
+          <td width="150" class="state-cell">Louisiana</td>
+          <td width="150" class="Percent Widowed-cell">40.30</td>
+         <td width="150" class="Percent Alone-cell">35.73</td>
+          <td width="150" class="PA Below Poverty-cell">9.61</td>
+        </tr>
+        <tr>
+          <td width="150" class="state-cell">Alabama</td>
+          <td width="150" class="Percent Widowed-cell">40.59</td>
+          <td width="150" class="Percent Alone-cell">35.91</td>
+          <td width="150" class="PA Below Poverty-cell">9.1</td>
+        </tr>
+        <tr>
+          <td width="150" class="state-cell">West Virginia</td>
+          <td width="150" class="Percent Widowed-cell">42.59</td>
+          <td width="150" class="Percent Alone-cell">39.35</td>
+          <td width="150" class="PA Below Poverty-cell">7.25</td>
+        </tr>
+        <tr>
+          <td width="150" class="state-cell">Kentucky</td>
+          <td width="150" class="Percent Widowed-cell">39.58</td>
+          <td width="150" class="Percent Alone-cell">36.2</td>
+          <td width="150" class="PA Below Poverty-cell">8.95</td>
+        </tr>
+      </tbody>
+    </table>
+
+  
+
+  <p>All over the south, with limited money for proper care, seniors rely on state and federal services like Medicaid and Social Security. This can be frustrating, and not necessarily fair or efficient. </p>
+
+  <p>Tracy Thompson, Resource Center Coordinator at <a href="http://capitalaaa.org/" >Capital Area Agency on Aging</a> helps seniors in 13 Louisiana parishes find and understand services. She says that widowed women often don't have any or enough retirment savings to support themselves, let alone think about healthcare. She think females report more disabilities because southern men are too proud: 'men are very less likely to accept help, ask for help, or acknowledge that they even need assistance.'
+
+ <p>According to Thompson, there aren't enough services for people with incomes that border poverty. 'The people $2 above poverty guidelines can't afford to purchase [services] and can't qualify to recieve them,' she says. People in the middle are stuck. Literally.</p>
+
+ <p>Affordable transportation doesn't exist, and it is a problem for elderly seeking care outside of their parish. Unless a person has full medicare, they must pay for transportation leaving county lines, even if a person might travel 5 miles across borders, as opposed to 50 miles within them. 
+</p>
+
+  <p>Transportation is also an issue in West Virginia where <a href="http://directory.hsc.wvu.edu/UserDetails/32697" >Mary Ellen Zeppuhar</a> manages West Virginia University's <a href="http://www.cedwvu.org/" >Center for Excellence in Disabilities</a>. 'We don't really have a lot of programs. The ones we do have, I don't feel are really implemented properly,' she says.</p>
+
+  <p>Part of the implementation problems are lack of funds, which essentially leaves many of those seeking in-home care on a long waiting list. In Louisiana, Thompson says, the wait can be up to 7 years. By the time some elderly get to the top of the list, they are dead or in nursing homes.</p>
+
+  <p><a href="http://www.ilru.org/users/dan-kessler" >Dan Kessler</a>, executive director of <a href="http://drradvocates.org/" >Disability Rights and Resources in Alabama</a> says waiting lists for Medicare waiver programs and transportation issues as major problems in Alabama too. And that low wages for in-home workers aren't enough to attract the best caregivers. To make things worse, Kessler says the state is considering cutting waiver funding by 50 percent. </p>
+
+  <p>Everyone says they need more money, but Thompson says more money won't make a difference unless it leads to more home care services. She says the ideal future includes community based, in-home services to keep people out of nursing homes, which are still highly populated in Louisiana. Thompson says there are loopholes to help some parents pay their children for care, but it's limited.
+ </p>
+
+ <p>In Alabama, Kessler says legislation has been introduced to transform the long term care system. "In the long run, this could improve incentives to support people in their homes."
+</p>
+
+
+  	<p>In the meantime, family will take care of grandma, just as we always have. 
+  	</p>
+</div>
+
+
+</body>
+</html>
